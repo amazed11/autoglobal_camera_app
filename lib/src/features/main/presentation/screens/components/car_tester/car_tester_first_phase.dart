@@ -1,0 +1,177 @@
+import 'package:autoglobal_camera_app/src/core/app/dimensions.dart';
+import 'package:autoglobal_camera_app/src/widgets/custom_text.dart';
+import 'package:flutter/material.dart';
+
+class CarTesterFirstPhase extends StatefulWidget {
+  const CarTesterFirstPhase({super.key});
+
+  @override
+  _CarTesterFirstPhaseState createState() => _CarTesterFirstPhaseState();
+}
+
+class _CarTesterFirstPhaseState extends State<CarTesterFirstPhase> {
+  final List<Map<String, dynamic>> parts = [
+    {'rank': 1, 'name': 'Hood', 'selected': ''},
+    {'rank': 2, 'name': 'Front fender (left)', 'selected': ''},
+    {'rank': 3, 'name': 'Front fender (right)', 'selected': ''},
+    {'rank': 4, 'name': 'Front door (left)', 'selected': ''},
+    {'rank': 5, 'name': 'Front door (right)', 'selected': ''},
+    {'rank': 6, 'name': 'Rear door (left)', 'selected': ''},
+    {'rank': 7, 'name': 'Rear door (right)', 'selected': ''},
+    {'rank': 8, 'name': 'Trunk lid', 'selected': ''},
+    {'rank': 9, 'name': 'Radiator support (bolted parts)', 'selected': ''},
+    {'rank': 10, 'name': 'Roof panel', 'selected': ''},
+    {'rank': 11, 'name': 'Quarter panel (rear fender) (left)', 'selected': ''},
+    {'rank': 12, 'name': 'Quarter panel (rear fender) (right)', 'selected': ''},
+    {'rank': 13, 'name': 'Side sill panel (left)', 'selected': ''},
+    {'rank': 14, 'name': 'Side sill panel (right)', 'selected': ''},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "Sheet metal, welding repair, replacement and corrosion of external plating areas",
+          ),
+        ),
+        vSizedBox2,
+        _buildOptionHeader(),
+        vSizedBox2,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildCheckboxHeader(),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: parts.length,
+            itemBuilder: (context, index) {
+              final part = parts[index];
+              return Card(
+                margin: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  title: Text(
+                    part['name'],
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: _buildCheckboxRow(part, index),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOptionHeader() {
+    return Wrap(
+      runSpacing: 10,
+      spacing: 10,
+      children: [
+        CustomText.ourText(
+          'Exchange (B)',
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+        CustomText.ourText(
+          'Sheet Metal/Welding (C)',
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+        CustomText.ourText(
+          'Corrosion (D)',
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+        CustomText.ourText(
+          'Scratch (E)',
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+        CustomText.ourText(
+          'Irregularities (F)',
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+        CustomText.ourText(
+          'Damaged (G)',
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCheckboxHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          CustomText.ourText(
+            'B',
+            fontWeight: FontWeight.bold,
+          ),
+          CustomText.ourText(
+            'C',
+            fontWeight: FontWeight.bold,
+          ),
+          CustomText.ourText(
+            'D',
+            fontWeight: FontWeight.bold,
+          ),
+          CustomText.ourText(
+            'E',
+            fontWeight: FontWeight.bold,
+          ),
+          CustomText.ourText(
+            'F',
+            fontWeight: FontWeight.bold,
+          ),
+          CustomText.ourText(
+            'G',
+            fontWeight: FontWeight.bold,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckboxRow(Map<String, dynamic> part, int index) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildCheckbox('B', part, index),
+        _buildCheckbox('C', part, index),
+        _buildCheckbox('D', part, index),
+        _buildCheckbox('E', part, index),
+        _buildCheckbox('F', part, index),
+        _buildCheckbox('G', part, index),
+      ],
+    );
+  }
+
+  Widget _buildCheckbox(String title, Map<String, dynamic> part, int index) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Checkbox(
+          value: part['selected'] == title,
+          onChanged: (bool? value) {
+            setState(() {
+              if (value == true) {
+                parts[index]['selected'] = title;
+              } else {
+                parts[index]['selected'] = '';
+              }
+            });
+          },
+        ),
+      ],
+    );
+  }
+}

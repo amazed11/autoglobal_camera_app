@@ -10,7 +10,6 @@ import 'package:googleapis_auth/auth_io.dart';
 
 class GoogleVisionService {
   Future<vision.VisionApi> _getVisionApi() async {
-    await dotenv.load();
     final serviceAccountJson = dotenv.env['GOOGLE_SERVICE_ACCOUNT_JSON'];
     if (serviceAccountJson == null) {
       throw Exception('GOOGLE_SERVICE_ACCOUNT_JSON not found in .env');

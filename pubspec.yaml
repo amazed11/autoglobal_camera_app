@@ -1,5 +1,5 @@
 name: autoglobal_camera_app
-description: "A new Flutter project."
+description: "AG Camera is a mobile application that utilizes the device's camera to capture images and videos, providing users with a seamless and intuitive photography experience. The app offers a range of features, including various shooting modes, filters, and editing tools, allowing users to enhance their photos and videos directly within the app. With its user-friendly interface and powerful camera capabilities, AG Camera aims to empower users to unleash their creativity and capture memorable moments effortlessly."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -71,9 +71,15 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   build_runner: ^2.4.9
   injectable_generator: ^2.4.2
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/appicon.png"
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -84,6 +90,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see

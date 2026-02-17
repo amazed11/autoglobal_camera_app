@@ -2,7 +2,6 @@ import 'package:autoglobal_camera_app/src/features/main/data/models/upload_image
 import 'package:autoglobal_camera_app/src/models/common_response_model.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/configs/api_config.dart';
 import '../../../../services/network/api_handler.dart';
 
 abstract class MainRemoteDataSource {
@@ -21,7 +20,7 @@ class MainRemoteDataSourceImpl implements MainRemoteDataSource {
       UploadImageRequestModel uploadImageRequestModel) async {
     try {
       var response = await _apiHandler.post(
-        "${ApiConfig.partnerUrl}${ApiConfig.uploadImageUrl}/${uploadImageRequestModel.carId}",
+        "ApiConfig.uploadImageUrl}/${uploadImageRequestModel.carId}",
         uploadImageRequestModel.toJson(),
         isauth: true,
       );

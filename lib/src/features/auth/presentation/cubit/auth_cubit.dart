@@ -44,8 +44,8 @@ class AuthCubit extends Cubit<AuthState> {
     return false;
   }
 
-  String? isEmailValid(String val) {
-    if (val.toString().isEmpty) {
+  String? isEmailValid(String? val) {
+    if (val.toString().isEmpty || val == null) {
       return emptyText;
     }
 
@@ -55,8 +55,8 @@ class AuthCubit extends Cubit<AuthState> {
     return null;
   }
 
-  String? isPasswordValid(String val) {
-    if (val.toString().isEmpty) {
+  String? isPasswordValid(String? val) {
+    if (val.toString().isEmpty || val == null) {
       return emptyText;
     }
 
@@ -92,7 +92,7 @@ class AuthCubit extends Cubit<AuthState> {
       final response = await getIt<LoginUsecase>().call(
         sanitizedData(),
       );
-      response.fold((failure) {
+      await response.fold((failure) {
         emit(
           state.copyWith(message: failure.message, status: AuthStatus.failure),
         );

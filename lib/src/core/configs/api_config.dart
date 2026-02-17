@@ -16,8 +16,7 @@ class ApiConfig {
               : localhost) +
       apiUrl +
       apiVersion1;
-  static const String partnerUrl = "/partner";
-  static const String loginUrl = '/login';
+  static const String loginUrl = '/login?type=camera';
   static const String authUrl = '/auth';
   static const String userAuthUrl = '/user-auth';
   static const String uploadImageUrl = '/upload-images';

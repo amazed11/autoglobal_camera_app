@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../../../../../di_injection.dart';
-import '../../../../../../core/app/dimensions.dart';
+import '../../../../../../core/app/colors.dart';
+import '../../../../../../core/configs/route_config.dart';
 import '../../../../../../widgets/custom_text_form_field_widget.dart';
 import '../../../cubit/auth_cubit.dart';
 
@@ -19,7 +21,6 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        vSizedBox1,
         CustomTextFormField(
           hintText: "Enter email",
           labelText: "Email",
@@ -28,7 +29,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
           validator: (val) => getIt<AuthCubit>().isEmailValid(val),
           textInputType: TextInputType.emailAddress,
         ),
-        vSizedBox2,
+        const SizedBox(height: 16),
         CustomTextFormField(
           hintText: "Enter password",
           labelText: "Password",
@@ -46,6 +47,22 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 : const Icon(Icons.visibility_outlined),
           ),
           validator: (val) => getIt<AuthCubit>().isPasswordValid(val),
+        ),
+        const SizedBox(height: 16),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: () {
+              context.pushNamed(RouteConfig.forgotPasswordRoute);
+            },
+            child: Text(
+              'Forgot Password?',
+              style: TextStyle(
+                color: AppColor.kPrimaryMain,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ),
       ],
     );

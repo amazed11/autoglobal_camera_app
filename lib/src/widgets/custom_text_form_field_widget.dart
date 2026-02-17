@@ -1,256 +1,97 @@
+import 'package:autoglobal_camera_app/src/core/app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../core/app/colors.dart';
-import '../core/app/theme/fonts.dart';
-import '../core/configs/regex_config.dart';
-
 class CustomTextFormField extends StatelessWidget {
-  TextEditingController? controller;
-  dynamic formKey;
-  String? hintText;
-  TextInputType textInputType;
-  String? labelText;
-  Widget? suffix;
-  bool? isEnabled;
-  bool readOnly;
-  bool obscureText;
+  final TextEditingController controller;
+  final String labelText;
+  final IconData? prefixIcon;
+  final Widget? prefixWidget;
+  final Widget? suffix;
+  final bool obscureText;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final VoidCallback? onTap;
+  final Function(String)? onChanged;
+  final bool readOnly;
+  final bool enabled;
+  final int? maxLines;
+  final String? hintText;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextAlign textAlign;
+  final TextStyle? style;
+  final int? maxLength;
+  final TextInputType? textInputType;
 
-  final Function? validator;
-  bool onlyText;
-  bool onlyNumber;
-  int? maxLine;
-  int? minLine;
-  int? maxLength;
-  String? prefixText;
-  bool? filled;
-  Color? fillColor;
-  IconData? prefixIcon;
-  Function()? onTap;
-  Function? onChanged;
-  Function? onFieldSubmitted;
-  String? initialValue;
-  bool? isSearch;
-  bool? autoFocus;
-  AutovalidateMode? autovalidateMode;
-  List<String> autoFillHint;
-  bool searchString;
-  bool fullNameString;
-  bool allowMultipleSpace;
-  bool? showBorder;
-  TextInputAction? textInputAction;
-  double borderRadius;
-  double? hintTextSize;
-  FontWeight? hintTextWeight;
-  double? enteredTextSize;
-  FontWeight? enteredTextWeight;
-  TextAlign? textAlignment;
-  bool? notFromFormType = false;
-  bool? allowDouble;
-  bool? onlyPhoneNumber;
-  dynamic prefixIconSize;
-  bool? isPrefixText;
-  Widget? prefix;
-  Widget? suffixInside;
-
-  CustomTextFormField({
-    Key? key,
-    this.formKey,
-    this.suffixInside,
-    this.prefix,
-    this.controller,
-    this.onlyPhoneNumber = false,
-    this.hintText,
-    this.textInputType = TextInputType.text,
-    this.labelText,
+  const CustomTextFormField({
+    super.key,
+    required this.controller,
+    required this.labelText,
+    this.prefixIcon,
+    this.prefixWidget,
     this.suffix,
-    this.isEnabled = true,
-    this.readOnly = false,
     this.obscureText = false,
     this.validator,
-    this.onlyText = false,
-    this.onlyNumber = false,
-    this.maxLine = 1,
-    this.minLine = 1,
-    this.isPrefixText,
-    this.maxLength,
-    this.prefixText,
-    this.filled = false,
-    this.fillColor = const Color(0xffF4F4F4),
-    this.prefixIcon,
+    this.keyboardType,
+    this.textInputAction,
     this.onTap,
     this.onChanged,
-    this.onFieldSubmitted,
-    this.initialValue,
-    this.isSearch = false,
-    this.autoFocus = false,
-    this.autovalidateMode,
-    this.autoFillHint = const [],
-    this.searchString = false,
-    this.fullNameString = false,
-    this.allowMultipleSpace = true,
-    this.textInputAction,
-    this.showBorder,
-    this.borderRadius = 12,
-    this.hintTextSize,
-    this.hintTextWeight,
-    this.enteredTextSize,
-    this.enteredTextWeight,
-    this.textAlignment,
-    this.notFromFormType,
-    this.allowDouble,
-    this.prefixIconSize = 22.0,
-  }) : super(key: key);
+    this.readOnly = false,
+    this.enabled = true,
+    this.maxLines = 1,
+    this.hintText,
+    this.inputFormatters,
+    this.textAlign = TextAlign.start,
+    this.style,
+    this.maxLength,
+    this.textInputType,
+  }) : assert(
+          prefixIcon == null || prefixWidget == null,
+          'Cannot provide both prefixIcon and prefixWidget',
+        );
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      autofocus: autoFocus ?? false,
-      textAlign: textAlignment ?? TextAlign.left,
-      minLines: minLine,
-      maxLines: maxLine,
-      maxLength: maxLength,
-      textInputAction: textInputAction ?? TextInputAction.done,
-      autofillHints: autoFillHint,
-      // autofocus: autoFocus ?? false,
-
-      validator: (value) {
-        return validator == null ? null : validator!(value);
-      },
-      style: TextStyle(
-        color: readOnly ? Colors.grey : null,
-        fontSize: enteredTextSize ?? 16,
-        fontFamily: appFont,
-        fontWeight: enteredTextWeight ?? FontWeight.w400,
-      ),
-      inputFormatters: onlyNumber
-          ? [
-              FilteringTextInputFormatter.allow(RegexConfig.numberRegex),
-              FilteringTextInputFormatter.deny(
-                RegexConfig.stopConsecutiveSpace,
-              ),
-            ]
-          : onlyText
-              ? [
-                  FilteringTextInputFormatter.allow(RegexConfig.textRegex),
-                  FilteringTextInputFormatter.deny(
-                    RegexConfig.stopConsecutiveSpace,
-                  ),
-                ]
-              : searchString
-                  ? [
-                      FilteringTextInputFormatter.allow(
-                          RegexConfig.searchRegrex),
-                      FilteringTextInputFormatter.deny(
-                        RegexConfig.stopConsecutiveSpace,
-                      ),
-                    ]
-                  : fullNameString
-                      ? [
-                          FilteringTextInputFormatter.allow(
-                              RegexConfig.fullNameTextRegrex),
-                          FilteringTextInputFormatter.deny(
-                            RegexConfig.stopConsecutiveSpace,
-                          ),
-                        ]
-                      : allowMultipleSpace == false
-                          ? [
-                              FilteringTextInputFormatter.deny(
-                                RegExp(r'\s{2}'),
-                              ),
-                            ]
-                          : allowDouble == false
-                              ? [
-                                  FilteringTextInputFormatter.allow(
-                                    RegexConfig.doubleRegExp,
-                                  ),
-                                ]
-                              : onlyPhoneNumber == true
-                                  ? [FilteringTextInputFormatter.digitsOnly]
-                                  : [
-                                      // FilteringTextInputFormatter.deny(
-                                      //   RegexConfig.stopConsecutiveSpace,
-                                      // ),
-                                    ],
-      readOnly: readOnly,
-      initialValue: initialValue,
-      enabled: isEnabled,
-      onTap: onTap,
-      onChanged: (val) => isSearch == true ? onChanged!(val) : null,
-      onFieldSubmitted: (val) =>
-          isSearch == true ? onFieldSubmitted!(val) : null,
-      autovalidateMode: autovalidateMode ?? AutovalidateMode.onUserInteraction,
       controller: controller,
-      keyboardType: textInputType,
       obscureText: obscureText,
+      validator: validator,
+      keyboardType: textInputType,
+      textInputAction: textInputAction,
+      onTap: onTap,
+      onChanged: onChanged,
+      readOnly: readOnly,
+      enabled: enabled,
+      maxLines: maxLines,
+      maxLength: maxLength,
+      inputFormatters: inputFormatters,
+      textAlign: textAlign,
+      style: style,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
-        prefixText: isPrefixText == true ? prefixText : null,
-        prefixStyle: TextStyle(
-          fontFamily: appFont,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        filled: filled,
-        // contentPadding: notFromFormType == true
-        //     ? EdgeInsets.zero
-        //     : const EdgeInsets.all(8.0),
-        labelStyle: TextStyle(
-          fontFamily: appFont,
-          color: AppColor.kIconColor,
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-        ),
-        errorStyle: TextStyle(
-          fontSize: 10.0,
-          fontFamily: appFont,
-        ),
-        hintStyle: TextStyle(
-          fontFamily: appFont,
-          // fontSize: 16.0,
-          color: AppColor.kNeutral500,
-          fontSize: hintTextSize ?? 15,
-          fontWeight: hintTextWeight ?? FontWeight.w400,
-        ),
-        prefixIcon: prefixIcon != null
-            ? Transform.translate(
-                offset: const Offset(0, 3),
-                child: Icon(
-                  prefixIcon,
-                  color: AppColor.kIconColor,
-                  size: prefixIconSize,
-                ),
-              )
-            : null,
-        fillColor: filled == true ? fillColor : null,
-        hintText: hintText,
         labelText: labelText,
+        hintText: hintText,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300, width: 1.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColor.kPrimaryMain, width: 2.0),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColor.kError, width: 1.0),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColor.kError, width: 2.0),
+        ),
+        prefixIcon:
+            prefixWidget ?? (prefixIcon != null ? Icon(prefixIcon) : null),
         suffixIcon: suffix,
-        suffix: suffixInside,
-        suffixIconColor: AppColor.kIconColor,
-        enabledBorder: filled == true || showBorder == false
-            ? InputBorder.none
-            : OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
-                borderSide: BorderSide(
-                  color: AppColor.kTextFormFieldBorder,
-                ),
-              ),
-        border: filled == true
-            ? InputBorder.none
-            : OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
-                borderSide: BorderSide(
-                  color: AppColor.kTextFormFieldBorder,
-                ),
-              ),
-        focusedBorder: filled == true || showBorder == false
-            ? InputBorder.none
-            : OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
-                borderSide: BorderSide(
-                  color: AppColor.kTextFormFieldBorder,
-                ),
-              ),
       ),
     );
   }

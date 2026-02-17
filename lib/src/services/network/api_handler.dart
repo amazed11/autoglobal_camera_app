@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:injectable/injectable.dart';
 
@@ -10,7 +10,6 @@ import '../../core/app/texts.dart';
 import '../../core/configs/api_config.dart';
 import '../../core/development/console.dart';
 import '../../core/error/api_exceptions.dart';
-import '../../features/main/data/models/upload_image/upload_image_request_model.dart';
 import '../local/shared_preferences.dart';
 
 @singleton
@@ -21,64 +20,34 @@ class ApiHandler {
     "Accept": applicationJsonText
   };
 
-  late final Dio _dio;
-
-  ApiHandler() {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: ApiConfig.baseUrl,
-        connectTimeout: const Duration(seconds: timeOutDuration),
-        receiveTimeout: const Duration(seconds: timeOutDuration),
-        headers: _headers,
-      ),
-    );
-
-    _dio.interceptors.add(
-      LogInterceptor(
-        request: true,
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        responseBody: true,
-        error: true,
-      ),
-    );
-  }
-
   //DELETE
   Future<dynamic> delete(String api,
       {dynamic payloadObj, bool isauth = true}) async {
+    var uri = Uri.parse(ApiConfig.baseUrl + api);
     var token = SharedPreference.getToken();
     String? payload;
     if (payloadObj != null) {
       payload = json.encode(payloadObj);
     }
     try {
-      var response = await _dio.delete(
-        api,
-        data: payload,
-        options: Options(
-          headers: isauth
-              ? {
-                  "Content-Type": applicationJsonText,
-                  "Accept": applicationJsonText,
-                  "Authorization": "Bearer $token"
-                }
-              : _headers,
-        ),
-      );
-      consolelog(response.data);
-      consolelog(api);
+      var response = await http
+          .delete(uri,
+              body: payload,
+              headers: isauth == true
+                  ? {
+                      "Content-Type": applicationJsonText,
+                      "Accept": applicationJsonText,
+                      "Authorization": "Bearer $token"
+                    }
+                  : _headers)
+          .timeout(const Duration(seconds: timeOutDuration));
+      consolelog(response.body);
+      consolelog(uri);
       return processResponse(response);
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        throw ApiNotRespondingException(apiNotRespondingText, api);
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw FetchDataException(noInternetConnectionText, api);
-      } else {
-        rethrow;
-      }
+    } on SocketException {
+      throw FetchDataException(noInternetConnectionText, uri.toString());
+    } on TimeoutException {
+      throw ApiNotRespondingException(apiNotRespondingText, uri.toString());
     }
   }
 
@@ -90,112 +59,97 @@ class ApiHandler {
     bool isCustomApi = false,
     String? context,
   }) async {
-    var url = isCustomApi ? api : api;
+    var uri = isCustomApi == true
+        ? Uri.parse(api.toString())
+        : Uri.parse(ApiConfig.baseUrl + api);
     try {
       String? token;
       if (isauth ?? false) {
         token = SharedPreference.getToken();
       }
 
-      console("The API is: ${ApiConfig.baseUrl}$url");
-      var response = await _dio.get(
-        url,
-        options: Options(
-          headers: header ??
-              {
-                "Content-Type": applicationJsonText,
-                "Accept": applicationJsonText,
-                if (isauth ?? false) "Authorization": "Bearer $token"
-              },
-        ),
-      );
+      console("The API is: $uri");
+      var response = await http
+          .get(
+            uri,
+            headers: header ??
+                {
+                  "Content-Type": applicationJsonText,
+                  "Accept": applicationJsonText,
+                  if (isauth ?? false) "Authorization": "Bearer $token"
+                },
+          )
+          .timeout(const Duration(seconds: timeOutDuration));
       console("Response Status Code: ${response.statusCode}");
-      consolelog(response.data);
-      consolelog("$context :::: ${ApiConfig.baseUrl}$url");
+      consolelog(response.body);
+      consolelog("$context :::: $uri");
       consolelog("$bearerText $token");
       return processResponse(response);
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        throw ApiNotRespondingException(apiNotRespondingText, url);
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw FetchDataException(noInternetConnectionText, url);
-      } else {
-        rethrow;
-      }
+    } on SocketException {
+      throw FetchDataException(noInternetConnectionText, uri.toString());
+    } on TimeoutException {
+      throw ApiNotRespondingException(apiNotRespondingText, uri.toString());
     }
   }
 
 //PATCH
   Future<dynamic> patch(String api,
       {dynamic payloadObj, bool? isauth = true}) async {
-    console(api);
+    var uri = Uri.parse(ApiConfig.baseUrl + api);
+    console(uri);
     try {
       var payload = json.encode(payloadObj);
       console("payload $payload");
       var token = SharedPreference.getToken();
-      var response = await _dio.patch(
-        api,
-        data: payload,
-        options: Options(
-          headers: isauth == true
-              ? {
-                  "Content-Type": applicationJsonText,
-                  "Accept": applicationJsonText,
-                  "Authorization": "Bearer $token"
-                }
-              : _headers,
-        ),
-      );
-      consolelog(response.data);
+      var response = await http
+          .patch(uri,
+              body: payload,
+              headers: isauth == true
+                  ? {
+                      "Content-Type": applicationJsonText,
+                      "Accept": applicationJsonText,
+                      "Authorization": "Bearer $token"
+                    }
+                  : _headers)
+          .timeout(const Duration(seconds: timeOutDuration));
+      consolelog(response.body);
       consolelog(payload);
-      consolelog(api);
+      consolelog(uri);
       consolelog("Bearer $token");
       return processResponse(response);
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        throw ApiNotRespondingException(apiNotRespondingText, api);
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw FetchDataException(noInternetConnectionText, api);
-      } else {
-        rethrow;
-      }
+    } on SocketException {
+      throw FetchDataException(noInternetConnectionText, uri.toString());
+    } on TimeoutException {
+      throw ApiNotRespondingException(apiNotRespondingText, uri.toString());
     }
   }
 
   //PUT
   Future<dynamic> put(String api, dynamic payloadObj,
       {bool? isauth = true}) async {
+    var uri = Uri.parse(ApiConfig.baseUrl + api);
     var payload = json.encode(payloadObj);
     var token = SharedPreference.getToken();
     try {
-      var response = await _dio.put(
-        api,
-        data: payload,
-        options: Options(
-          headers: isauth == true
-              ? {
-                  "Content-Type": applicationJsonText,
-                  "Accept": applicationJsonText,
-                  "Authorization": "Bearer $token"
-                }
-              : _headers,
-        ),
-      );
-      consolelog(response.data);
+      var response = await http
+          .put(uri,
+              body: payload,
+              headers: isauth == true
+                  ? {
+                      "Content-Type": applicationJsonText,
+                      "Accept": applicationJsonText,
+                      "Authorization": "Bearer $token"
+                    }
+                  : _headers)
+          .timeout(const Duration(seconds: timeOutDuration));
+      consolelog(response.body);
       consolelog(payload);
-      consolelog(api);
+      consolelog(uri);
       return processResponse(response);
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        throw ApiNotRespondingException(apiNotRespondingText, api);
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw FetchDataException(noInternetConnectionText, api);
-      } else {
-        rethrow;
-      }
+    } on SocketException {
+      throw FetchDataException(noInternetConnectionText, uri.toString());
+    } on TimeoutException {
+      throw ApiNotRespondingException(apiNotRespondingText, uri.toString());
     }
   }
 
@@ -204,47 +158,47 @@ class ApiHandler {
     String api,
     dynamic payloadObj, {
     bool? isauth = true,
-    bool? checkout = false,
-    Map<String, String>? checkoutHeader,
+    bool? isCustomAuthHeader = false,
+    Map<String, String>? customAuthHeader,
     Map<String, String>? header,
     bool? isCustomApi = false,
   }) async {
-    var url = isCustomApi == true ? api : api;
-    console(url);
+    var uri = isCustomApi == true
+        ? Uri.parse(api.toString())
+        : Uri.parse(ApiConfig.baseUrl + api);
+    console(uri);
     var payload = json.encode(payloadObj);
     console("payload $payload");
     try {
       var token = SharedPreference.getToken();
 
-      var response = await _dio.post(
-        url,
-        data: payload,
-        options: Options(
-          headers: checkout == true
-              ? checkoutHeader
-              : isauth == true
-                  ? {
-                      "Content-Type": applicationJsonText,
-                      "Accept": "application/json",
-                      "Authorization": "Bearer $token"
-                    }
-                  : _headers,
-        ),
-      );
-      consolelog(response.data);
+      var response = await http
+          .post(
+            uri,
+            body: payload,
+            headers: isCustomAuthHeader == true
+                ? customAuthHeader
+                : isauth == true
+                    ? {
+                        "Content-Type": applicationJsonText,
+                        "Accept": "application/json",
+                        "Authorization": "Bearer $token"
+                      }
+                    : _headers,
+          )
+          .timeout(
+            const Duration(seconds: timeOutDuration),
+          );
+      consolelog(response.body);
       consolelog(payload);
-      consolelog(url);
+      consolelog(uri);
       consolelog(response.headers);
       return processResponse(response);
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        throw ApiNotRespondingException(apiNotRespondingText, url);
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw FetchDataException(noInternetConnectionText, url);
-      } else {
-        rethrow;
-      }
+    } on SocketException catch (e) {
+      console(e.toString());
+      throw FetchDataException(noInternetConnectionText, uri.toString());
+    } on TimeoutException {
+      throw ApiNotRespondingException(apiNotRespondingText, uri.toString());
     }
   }
 
@@ -257,20 +211,29 @@ class ApiHandler {
     Map<String, String>? header,
     bool? isauth = false,
   }) async {
+    var uri = Uri.parse(
+      ApiConfig.baseUrl + api,
+    );
+
     try {
       var token = SharedPreference.getToken();
+      // var token = SharedPreference.getToken();
 
-      FormData formData = FormData();
-
+      var request = http.MultipartRequest(method, uri);
+      request.headers.addAll(
+        isauth == true
+            ? {
+                "Content-Type": applicationJsonText,
+                "Authorization": "Bearer $token"
+              }
+            : _headers,
+      );
       if (file != null) {
-        formData.files.add(MapEntry(
-          "$imageKey",
-          await MultipartFile.fromFile(file.path,
-              filename: file.path.split('/').last,
-              contentType: DioMediaType('image', 'jpg')),
-        ));
+        request.files.add(
+          await http.MultipartFile.fromPath("$imageKey", file.path,
+              contentType: MediaType('image', 'jpg')),
+        );
       }
-
       Map<String, String> serializedData = {};
       payloadObj?.forEach((key, value) {
         if (value is String) {
@@ -279,35 +242,20 @@ class ApiHandler {
           serializedData[key] = json.encode(value);
         }
       });
-      formData.fields
-          .addAll(serializedData.entries.map((e) => MapEntry(e.key, e.value)));
-
-      var response = await _dio.request(
-        api,
-        data: formData,
-        options: Options(
-          method: method,
-          headers:
-              isauth == true ? {"Authorization": "Bearer $token"} : _headers,
-        ),
-      );
-
+      request.fields.addAll(serializedData);
+      var data = await request.send();
+      var response = await http.Response.fromStream(data);
       consolelog("File: ${file?.path}");
       consolelog("Payload: $payloadObj");
-      consolelog("Api Url: $api");
+      consolelog("Api Url: $uri");
       console("Status Code: ${response.statusCode}");
-      consolelog("Response Body: ${response.data}");
+      consolelog("Response Body: ${response.body}");
 
       return processResponse(response);
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        throw ApiNotRespondingException(apiNotRespondingText, api);
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw FetchDataException(noInternetConnectionText, api);
-      } else {
-        rethrow;
-      }
+    } on SocketException {
+      throw FetchDataException(noInternetConnectionText, uri.toString());
+    } on TimeoutException {
+      throw ApiNotRespondingException(apiNotRespondingText, uri.toString());
     }
   }
 
@@ -324,22 +272,29 @@ class ApiHandler {
     String method = 'POST',
     Map<String, String>? header,
     bool? isauth = false,
-    UploadImageRequestModel? uploadImageRequestModel,
   }) async {
+    var uri = Uri.parse(
+      ApiConfig.baseUrl + api,
+    );
     try {
       var token = SharedPreference.getToken();
-      FormData formData = FormData();
+      var request = http.MultipartRequest(method, uri);
+      request.headers.addAll(
+        isauth == true
+            ? {"Accept": "application/json", "Authorization": "Bearer $token"}
+            : _headers,
+      );
+      Map<String, String> serializedData = {};
 
       if ((files?.isNotEmpty ?? false)) {
         for (var data in files!) {
           for (var e in data.entries) {
             final base64Image = await addBase64Image(e.value);
-            formData.fields.add(MapEntry(e.key, base64Image));
+            request.fields[e.key] = base64Image;
           }
         }
       }
 
-      Map<String, String> serializedData = {};
       payloadObj?.forEach((key, value) {
         if (value is String) {
           serializedData[key] = value;
@@ -347,30 +302,17 @@ class ApiHandler {
           serializedData[key] = json.encode(value);
         }
       });
-      formData.fields
-          .addAll(serializedData.entries.map((e) => MapEntry(e.key, e.value)));
 
-      var response = await _dio.request(
-        api,
-        data: formData,
-        options: Options(
-          method: method,
-          headers: isauth == true
-              ? {"Accept": "application/json", "Authorization": "Bearer $token"}
-              : _headers,
-        ),
-      );
+      request.fields.addAll(serializedData);
+
+      var data = await request.send();
+      var response = await http.Response.fromStream(data);
 
       return processResponse(response);
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        throw ApiNotRespondingException(apiNotRespondingText, api);
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw FetchDataException(noInternetConnectionText, api);
-      } else {
-        rethrow;
-      }
+    } on SocketException {
+      throw FetchDataException(noInternetConnectionText, uri.toString());
+    } on TimeoutException {
+      throw ApiNotRespondingException(apiNotRespondingText, uri.toString());
     }
   }
 
@@ -385,25 +327,31 @@ class ApiHandler {
     Map<String, String>? header,
     bool? isauth = false,
   }) async {
+    var uri = Uri.parse(
+      ApiConfig.baseUrl + api,
+    );
     try {
       var token = SharedPreference.getToken();
-      FormData formData = FormData();
-
+      var request = http.MultipartRequest(method, uri);
+      request.headers.addAll(
+        isauth == true
+            ? {
+                "Content-Type": applicationJsonText,
+                "Authorization": "$bearerText $token"
+              }
+            : _headers,
+      );
       if (file1 != null) {
-        formData.files.add(MapEntry(
-          "$image1Key",
-          await MultipartFile.fromFile(file1.path,
-              filename: file1.path.split('/').last,
+        request.files.add(
+          await http.MultipartFile.fromPath("$image1Key", file1.path,
               contentType: MediaType('image', 'jpg')),
-        ));
+        );
       }
       if (file2 != null) {
-        formData.files.add(MapEntry(
-          "$image2Key",
-          await MultipartFile.fromFile(file2.path,
-              filename: file2.path.split('/').last,
+        request.files.add(
+          await http.MultipartFile.fromPath("$image2Key", file2.path,
               contentType: MediaType('image', 'jpg')),
-        ));
+        );
       }
 
       Map<String, String> serializedData = {};
@@ -417,46 +365,55 @@ class ApiHandler {
 
       consolelog(serializedData);
 
-      formData.fields
-          .addAll(serializedData.entries.map((e) => MapEntry(e.key, e.value)));
+      request.fields.addAll(serializedData);
 
-      var response = await _dio.request(
-        api,
-        data: formData,
-        options: Options(
-          method: method,
-          headers: isauth == true
-              ? {"Authorization": "$bearerText $token"}
-              : _headers,
-        ),
-      );
-      consolelog(api);
-      consolelog(response.data);
+      var data = await request.send();
+      var response = await http.Response.fromStream(data);
+      consolelog(uri);
+      consolelog(response.body);
 
       return processResponse(response);
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        throw ApiNotRespondingException(apiNotRespondingText, api);
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw FetchDataException(noInternetConnectionText, api);
-      } else {
-        rethrow;
-      }
+    } on SocketException {
+      throw FetchDataException(noInternetConnectionText, uri.toString());
+    } on TimeoutException {
+      throw ApiNotRespondingException(apiNotRespondingText, uri.toString());
     }
   }
 
-  dynamic processResponse(Response response) async {
+  dynamic retryOriginalRequest(http.Request request) async {
+    try {
+      print("i am retry http after token refresh");
+      // Retry the original request with the updated access token
+      var refreshedResponse = await request.send();
+      var bodyBytes = await refreshedResponse.stream.toBytes();
+      // Create an http.Response object from the response data
+      var retryResponse = http.Response.bytes(
+        bodyBytes,
+        refreshedResponse.statusCode,
+        headers: refreshedResponse.headers,
+        request: refreshedResponse.request,
+      );
+      // Return the response
+      return retryResponse.bodyBytes.toString();
+    } catch (error) {
+      // Handle errors
+      print('Error occurred during retrying original request: $error');
+      throw Exception('Error occurred during retrying original request');
+    }
+  }
+
+  dynamic processResponse(http.Response response) async {
     switch (response.statusCode) {
       case 200:
       case 201:
       case 304:
-        return response.data.toString();
+        var responseJson = utf8.decode(response.bodyBytes);
+        return responseJson.toString();
 
       default:
         throw ApiException(
-          response.data["message"] ?? "Something went wrong",
-          response.requestOptions.uri.toString(),
+          json.decode(response.body)["message"] ?? "Something went wrong",
+          response.request?.url.toString(),
         );
     }
   }

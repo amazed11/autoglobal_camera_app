@@ -21,14 +21,18 @@ class AppTheme {
         ),
         bottomNavigationBarTheme:
             const BottomNavigationBarThemeData(backgroundColor: Colors.white),
-        dialogBackgroundColor: Colors.white,
         unselectedWidgetColor: Colors.black,
         bottomSheetTheme: const BottomSheetThemeData(
           backgroundColor: Colors.white,
         ),
         appBarTheme: const AppBarTheme(
-            systemOverlayStyle: SystemUiOverlayStyle(
-                statusBarIconBrightness: Brightness.light)),
+          elevation: 0,
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          iconTheme: IconThemeData(color: Colors.black),
+          systemOverlayStyle:
+              SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark),
+        ),
         navigationBarTheme: const NavigationBarThemeData(),
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: <TargetPlatform, PageTransitionsBuilder>{
@@ -37,6 +41,7 @@ class AppTheme {
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
           },
         ),
+        dialogTheme: const DialogThemeData(backgroundColor: Colors.white),
       );
 
   // static ThemeData darkTheme({Color? color}) => ThemeData(

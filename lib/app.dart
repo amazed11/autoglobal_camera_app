@@ -1,5 +1,4 @@
 import 'package:autoglobal_camera_app/src/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:autoglobal_camera_app/src/features/auth/presentation/screens/register/cubit/register_cubit.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/cubit/camera_cubit.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/cubit/upload_image_cubit.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +25,6 @@ class AgCarGeneralApp extends StatelessWidget {
           create: (context) => getIt<AuthCubit>(),
         ),
         BlocProvider(
-          create: (context) => getIt<RegisterCubit>(),
-        ),
-        BlocProvider(
           create: (context) => getIt<CameraCubit>(),
         ),
         BlocProvider(
@@ -36,7 +32,7 @@ class AgCarGeneralApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp.router(
-        title: " AG Car General",
+        title: "AG Data",
         debugShowCheckedModeBanner: false,
         routerConfig: AppRouter.router,
         theme: AppTheme.lightTheme(),

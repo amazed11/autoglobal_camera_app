@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../di_injection.dart';
 import '../../../../../core/app/dimensions.dart';
+import '../../../../../core/app/medias.dart';
 import '../../../../../core/configs/route_config.dart';
-import '../../../../../core/development/console.dart';
 import '../../../../../core/routing/route_generator.dart';
 import '../../cubit/splash_cubit.dart';
 
@@ -19,8 +18,8 @@ class SplashBody extends StatefulWidget {
 class _SplashBodyState extends State<SplashBody> {
   @override
   void initState() {
-    getIt<SplashCubit>().getPreferences();
     super.initState();
+    getIt<SplashCubit>().getPreferences();
   }
 
   @override
@@ -28,10 +27,7 @@ class _SplashBodyState extends State<SplashBody> {
     return BlocListener<SplashCubit, SplashState>(
       listener: (context, state) {
         print("I am inside splash listener");
-        if (state.status == SplashStatus.initial) {
-          consolelog("i am initial");
-        }
-
+        if (state.status == SplashStatus.initial) {}
         if (state.status == SplashStatus.loggedIn) {
           AppRouter().clearAndNavigate(RouteConfig.mainRoute);
         }
@@ -39,28 +35,25 @@ class _SplashBodyState extends State<SplashBody> {
           AppRouter().clearAndNavigate(RouteConfig.loginRoute);
         }
       },
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            systemOverlayStyle: SystemUiOverlayStyle.light,
-          ),
-          body: const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text("Ag Car"),
-                vSizedBox2,
-                Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.5,
-                    ),
-                  ),
-                ),
-                vSizedBox1,
-              ],
-            ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SizedBox(
+          height: appHeight(context),
+          width: appWidth(context),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                kSplashImage,
+                width: appWidth(context) * 0.6,
+              ),
+              const SizedBox(height: 20),
+              const CircularProgressIndicator(
+                strokeWidth: 1.5,
+              ),
+              vSizedBox1,
+            ],
           ),
         ),
       ),

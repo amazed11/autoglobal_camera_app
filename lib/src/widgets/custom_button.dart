@@ -95,7 +95,7 @@ class CustomButton {
                         ? FontWeight.w500
                         : fontWeight ?? FontWeight.w500,
                     color: isBorder
-                        ? titleColor ?? Colors.black
+                        ? titleColor ?? Colors.white
                         : titleColor ??
                             (onPressed == null ? Colors.grey : Colors.white),
                     textDecoration: decorateText ?? TextDecoration.none),
@@ -128,8 +128,8 @@ class CustomButton {
       height: height ?? 44,
       child: TextButton(
         style: TextButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: backgroundColor ?? Colors.white,
+          foregroundColor: Colors.black,
+          backgroundColor: backgroundColor ?? Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
             side: isBordered == true
@@ -176,7 +176,7 @@ class CustomButton {
       bool? autofocus,
       Clip? clipBehavior,
       Color? backGroundColour,
-      MaterialStatesController? statesController,
+      WidgetStatesController? statesController,
       double? width,
       required Widget icon,
       required Widget label}) {
@@ -209,7 +209,7 @@ class CustomButton {
     FocusNode? focusNode,
     bool? autofocus,
     Clip? clipBehavior,
-    MaterialStatesController? statesController,
+    WidgetStatesController? statesController,
     required Widget icon,
     required Widget label,
     double borderRadius = 3.0,
@@ -226,7 +226,7 @@ class CustomButton {
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.all(padding ?? 0.0),
           disabledBackgroundColor: Colors.grey.shade400,
-          backgroundColor: bgColor ?? Colors.white,
+          backgroundColor: bgColor ?? Colors.black,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius)),
         ),

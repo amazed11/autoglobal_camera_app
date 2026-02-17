@@ -1,20 +1,15 @@
+import 'package:autoglobal_camera_app/src/core/app/medias.dart';
 import 'package:autoglobal_camera_app/src/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:flutter/gestures.dart';
+import 'package:autoglobal_camera_app/src/utils/unfocus_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../../di_injection.dart';
 import '../../../../../core/app/colors.dart';
-import '../../../../../core/app/dimensions.dart';
-import '../../../../../core/app/texts.dart';
 import '../../../../../core/configs/route_config.dart';
-import '../../../../../core/routing/route_navigation.dart';
 import '../../../../../utils/custom_toasts.dart';
-import '../../../../../widgets/custom_button.dart';
 import '../../../../../widgets/custom_dialogs.dart';
-import '../../../../../widgets/custom_footer_text.dart';
-import '../../../../../widgets/custom_text.dart';
 import 'widgets/login_form_widget.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -29,99 +24,108 @@ class LoginScreen extends StatelessWidget {
               context: context, data: state.message);
         }
         if (state.status == AuthStatus.failure) {
-          back(context);
+          // Dismiss any loading dialog if present
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
           errorToast(msg: state.message);
         }
         if (state.status == AuthStatus.success) {
-          back(context);
+          // Dismiss any loading dialog if present
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
           successToast(msg: state.message);
           context.pushNamed(RouteConfig.mainRoute);
         }
       },
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            title: CustomText.ourText(
-              "Login",
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          bottomNavigationBar: Container(
-            padding: screenLeftRightPadding,
-            height: 50,
-            child: const CustomFooterText(),
-          ),
-          body: ListView(
-            padding: screenPadding,
-            children: [
-              vSizedBox2,
-              CustomText.ourText(
-                "You're Welcome",
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-              CustomText.ourText(
-                "Enter your details to proceed further",
-                color: AppColor.kNeutral300,
-              ),
-              vSizedBox3,
-              Form(
-                key: getIt<AuthCubit>().formKey,
-                child: const LoginFormWidget(),
-              ),
-              vSizedBox2,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Logo or Title
+                Image.asset(
+                  kLogoImage,
+                  width: 120,
+                ),
+                const SizedBox(height: 24),
+
+                // Title
+                const Text(
+                  'Login',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontFamily: 'Quicksand',
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Subtitle
+                Text(
+                  'Welcome back! Please sign in to continue',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    fontFamily: 'Quicksand',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+
+                // Form
+                Form(
+                  key: getIt<AuthCubit>().formKey,
+                  child: const LoginFormWidget(),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Login Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
                     onPressed: () {
-                      context.pushNamed(RouteConfig.forgotPasswordRoute);
+                      if (getIt<AuthCubit>().isFormValid()) {
+                        unfocusKeyboard(context);
+                        getIt<AuthCubit>().login();
+                      } else {
+                        warningToast(msg: 'Please fill all required fields');
+                      }
                     },
-                    child: CustomText.ourText(
-                      "Forgot Password ?",
-                      color: Colors.blue,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColor.kPrimaryMain,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
                     ),
-                  )
-                ],
-              ),
-              vSizedBox2,
-              CustomButton.elevatedButton(
-                "Login",
-                () {
-                  if (getIt<AuthCubit>().isFormValid()) {
-                    getIt<AuthCubit>().login();
-                  } else {
-                    warningToast(msg: pleaseFillText);
-                  }
-                },
-              ),
-              vSizedBox3,
-              Align(
-                alignment: Alignment.center,
-                child: RichText(
-                  text: TextSpan(
-                      text: "Don't have an account? ",
-                      style: const TextStyle(
-                        color: Colors.grey,
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                         fontFamily: 'Quicksand',
                       ),
-                      children: [
-                        TextSpan(
-                          text: "Register",
-                          style: const TextStyle(
-                            fontFamily: 'Quicksand',
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500,
-                            decoration: TextDecoration.underline,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () =>
-                                context.pushNamed(RouteConfig.registerRoute),
-                        ),
-                      ]),
+                    ),
+                  ),
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),

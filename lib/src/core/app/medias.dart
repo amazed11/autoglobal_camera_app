@@ -12,7 +12,8 @@ const baseModelPath = 'assets/model/';
 const baseNetworkPath = 'https://files.theyetilabs.com/eNirman/';
 
 //images
-final kLogoImage = _getImageBasePath('logo.png');
+final kLogoImage = _getImageBasePath('splash.png');
+final kSplashImage = _getImageBasePath('splash.png');
 final kLoadingGif = _getImageBasePath('487.gif');
 final kBackground = _getImageBasePath('background.jpeg');
 final kGoogle = _getImageBasePath('google.png');

@@ -13,7 +13,7 @@ console(var data) {
 
 consolelog(var data) {
   if (kDebugMode) {
-    return log(data.toString());
+    return log("::::::::::-->$data");
   }
 }
 

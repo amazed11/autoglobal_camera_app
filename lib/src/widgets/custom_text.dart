@@ -15,11 +15,12 @@ class CustomText {
     Color? decorationColor,
     bool? isFontFamily = true,
     double? letterSpacing = 0,
+    TextOverflow? overflow,
   }) =>
       Text(
         data ?? '',
         maxLines: maxLines,
-        overflow: TextOverflow.ellipsis,
+        overflow: overflow ?? TextOverflow.ellipsis,
         textAlign: textAlign,
         style: TextStyle(
           decoration: textDecoration ?? TextDecoration.none,

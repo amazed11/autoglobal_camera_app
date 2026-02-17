@@ -1,5 +1,4 @@
 import 'package:autoglobal_camera_app/src/features/auth/presentation/screens/login/login_screen.dart';
-import 'package:autoglobal_camera_app/src/features/auth/presentation/screens/register/register_screen.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/car_tester/car_tester_screen.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/car_washer/all_car_image_screen.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/car_washer/car_washer_screen.dart';
@@ -45,13 +44,6 @@ class AppRouter {
         path: RouteConfig.loginRoute,
         builder: (BuildContext context, GoRouterState state) {
           return const LoginScreen();
-        },
-      ),
-      GoRoute(
-        name: RouteConfig.registerRoute,
-        path: RouteConfig.registerRoute,
-        builder: (BuildContext context, GoRouterState state) {
-          return const RegisterScreen();
         },
       ),
       GoRoute(

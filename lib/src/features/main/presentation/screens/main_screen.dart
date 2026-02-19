@@ -1,11 +1,19 @@
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/main_body.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../../di_injection.dart';
+import '../../../../services/network/api_handler.dart';
+import '../cubit/main_cubit.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MainBody();
+    return BlocProvider(
+      create: (_) => MainCubit(getIt<ApiHandler>())..fetchInitialCars(),
+      child: const MainBody(),
+    );
   }
 }

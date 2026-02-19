@@ -11,92 +11,58 @@ String loginResponseModelToJson(LoginResponseModel data) =>
     json.encode(data.toJson());
 
 class LoginResponseModel {
-  final bool? status;
-  final String? message;
-  final LoginData? data;
+  String? message;
+  User? user;
 
   LoginResponseModel({
-    this.status,
     this.message,
-    this.data,
+    this.user,
   });
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) =>
       LoginResponseModel(
-        status: json["status"],
         message: json["message"],
-        data: json["data"] == null ? null : LoginData.fromJson(json["data"]),
+        user: json["user"] == null ? null : User.fromJson(json["user"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
         "message": message,
-        "data": data?.toJson(),
-      };
-}
-
-class LoginData {
-  final String? token;
-
-  LoginData({
-    this.token,
-  });
-
-  factory LoginData.fromJson(Map<String, dynamic> json) => LoginData(
-        token: json["token"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "token": token,
+        "user": user?.toJson(),
       };
 }
 
 class User {
-  final int? id;
-  final String? name;
-  final String? email;
-  final DateTime? emailVerifiedAt;
-  final dynamic phone;
-  final dynamic noteForUser;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  String? token;
+  String? name;
+  String? email;
+  String? phone;
+  String? role;
+  bool? needVerification;
 
   User({
-    this.id,
+    this.token,
     this.name,
     this.email,
-    this.emailVerifiedAt,
     this.phone,
-    this.noteForUser,
-    this.createdAt,
-    this.updatedAt,
+    this.role,
+    this.needVerification,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json["id"],
+        token: json["token"],
         name: json["name"],
         email: json["email"],
-        emailVerifiedAt: json["email_verified_at"] == null
-            ? null
-            : DateTime.parse(json["email_verified_at"]),
         phone: json["phone"],
-        noteForUser: json["note_for_user"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
+        role: json["role"],
+        needVerification: json["need_verification"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "token": token,
         "name": name,
         "email": email,
-        "email_verified_at": emailVerifiedAt?.toIso8601String(),
         "phone": phone,
-        "note_for_user": noteForUser,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
+        "role": role,
+        "need_verification": needVerification,
       };
 }

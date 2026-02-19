@@ -1,4 +1,10 @@
 import 'package:autoglobal_camera_app/src/features/auth/presentation/screens/login/login_screen.dart';
+import 'package:autoglobal_camera_app/src/features/main/data/models/car/car_response_model.dart';
+import 'package:autoglobal_camera_app/src/features/main/presentation/screens/car_damage_screen.dart';
+import 'package:autoglobal_camera_app/src/features/main/presentation/screens/car_document_screen.dart';
+import 'package:autoglobal_camera_app/src/features/main/presentation/screens/car_option_screen.dart';
+import 'package:autoglobal_camera_app/src/features/main/presentation/screens/car_paint_screen.dart';
+import 'package:autoglobal_camera_app/src/features/main/presentation/screens/car_permission_screen.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/car_tester/car_tester_screen.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/car_washer/all_car_image_screen.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/car_washer/car_washer_screen.dart';
@@ -8,6 +14,7 @@ import 'package:autoglobal_camera_app/src/features/main/presentation/screens/com
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/car_washer/other_camera_screen.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/components/car_washer/re_order_images_screen.dart';
 import 'package:autoglobal_camera_app/src/features/main/presentation/screens/main_screen.dart';
+import 'package:autoglobal_camera_app/src/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -117,6 +124,53 @@ class AppRouter {
           return ReorderImageScreen(
             reorderImageModel: data,
           );
+        },
+      ),
+      GoRoute(
+        name: RouteConfig.profileRoute,
+        path: RouteConfig.profileRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          return const ProfileScreen();
+        },
+      ),
+      GoRoute(
+        name: RouteConfig.carPermissionRoute,
+        path: RouteConfig.carPermissionRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          final car = state.extra as CarModel;
+          return CarPermissionScreen(car: car);
+        },
+      ),
+      GoRoute(
+        name: RouteConfig.carDamageRoute,
+        path: RouteConfig.carDamageRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          final car = state.extra as CarModel;
+          return CarDamageScreen(car: car);
+        },
+      ),
+      GoRoute(
+        name: RouteConfig.carOptionRoute,
+        path: RouteConfig.carOptionRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          final car = state.extra as CarModel;
+          return CarOptionScreen(car: car);
+        },
+      ),
+      GoRoute(
+        name: RouteConfig.carPaintRoute,
+        path: RouteConfig.carPaintRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          final car = state.extra as CarModel;
+          return CarPaintScreen(car: car);
+        },
+      ),
+      GoRoute(
+        name: RouteConfig.carDocumentRoute,
+        path: RouteConfig.carDocumentRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          final car = state.extra as CarModel;
+          return CarDocumentScreen(car: car);
         },
       ),
     ],

@@ -1,4 +1,5 @@
 import 'package:autoglobal_camera_app/src/core/app/medias.dart';
+import 'package:autoglobal_camera_app/src/core/configs/route_config.dart';
 import 'package:autoglobal_camera_app/src/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:autoglobal_camera_app/src/utils/unfocus_keyboard.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../../di_injection.dart';
 import '../../../../../core/app/colors.dart';
-import '../../../../../core/configs/route_config.dart';
 import '../../../../../utils/custom_toasts.dart';
 import '../../../../../widgets/custom_dialogs.dart';
 import 'widgets/login_form_widget.dart';
@@ -36,7 +36,7 @@ class LoginScreen extends StatelessWidget {
             Navigator.pop(context);
           }
           successToast(msg: state.message);
-          context.pushNamed(RouteConfig.mainRoute);
+          context.pushReplacement(RouteConfig.mainRoute);
         }
       },
       child: Scaffold(

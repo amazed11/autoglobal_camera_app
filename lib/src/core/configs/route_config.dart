@@ -14,4 +14,10 @@ class RouteConfig {
   static const String allImageRoute = '/all_image_route';
   static const String reOrderImageRoute = '/reorder_image_route';
   static const String videoRoute = '/video_route';
+  static const String profileRoute = '/profile_route';
+  static const String carPermissionRoute = '/car_permission_route';
+  static const String carDamageRoute = '/car_damage_route';
+  static const String carOptionRoute = '/car_option_route';
+  static const String carDocumentRoute = '/car_document_route';
+  static const String carPaintRoute = '/car_paint_route';
 }

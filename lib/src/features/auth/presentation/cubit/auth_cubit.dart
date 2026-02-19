@@ -96,8 +96,8 @@ class AuthCubit extends Cubit<AuthState> {
         emit(
           state.copyWith(message: failure.message, status: AuthStatus.failure),
         );
-      }, (result) {
-        SharedPreference.setAuthToken("${result.data?.token}");
+      }, (result) async {
+        await SharedPreference.setAuthToken("${result.user?.token}");
         emit(
           state.copyWith(
             status: AuthStatus.success,

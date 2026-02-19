@@ -43,6 +43,14 @@ class ApiConfig {
   static const String galleryEditUrl = '/gallery-edit/';
   static const String refreshUrl = '/refresh/';
   static const String tokenUrl = '/token';
+  static const String cameraCarsUrl = '/cars/camera';
+  static const String carsDamageJsonUrl = '/cars/damage/json';
+  static const String carsDamageUrl = '/cars/damage';
+  static const String carsPaintJsonUrl = '/cars/paint/json';
+  static const String carsPaintUrl = '/cars/paint';
+  static const String carsDocumentUrl = '/cars/document';
+  static const String carsOptionsJsonUrl = '/cars/options/json';
+  static const String carsOptionsUrl = '/cars/options';
   static const String checkoutUrl = '/checkout';
   static const String teamUrl = '/teams';
   static const String listingUrl = '/listings';
